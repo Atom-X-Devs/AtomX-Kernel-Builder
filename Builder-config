@@ -1,0 +1,22 @@
+# User config
+	USER=OGIndian
+	HOST=
+
+# Device config
+	DEVICENAME='Redmi Note 6 Pro'
+	CODENAME=tulip
+	CODENAME2=
+	CAM_LIB=
+
+# Defconfig name
+	DEFCONFIG=AtomX-$DEVICE${CAM_LIB}_defconfig
+
+# Compiler
+	COMPILER=CLANG
+	COMPILER2=GCC
+
+# Backports (should be disabled if not present)
+	VDSO_BACKPORT=1
+
+# Do not edit !
+BUILD_VARS="$USER $HOST $DEVICENAME $CODENAME $CODENAME2 $CAM_LIB $DEFCONFIG $VDSO_BACKPORT"

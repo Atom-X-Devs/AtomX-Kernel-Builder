@@ -2,43 +2,31 @@
 # Copyright (c) 2021, Divyanshu-Modi <divyan.m05@gmail.com>
 #bin/#!/bin/bash
 
-# COMPILER
 	COMPILER="$1"
-
-# Kernel Version API
-	export KERNEL_VERSION_LONG=$(make kernelversion)
-	export KERNEL_VERSION_SHORT=$(make kernelversion | cut -c 1-3)
-
-# User config
-	USER=OGIndian
-	HOST=$(uname -n)
-	VERSION=3.0
-
-# CLANG
+	USER="$2"
+	HOST="$3"
+	if [[ "$HOST" == "" ]]; then
+		HOST=$(uname -n)
+	fi
+	DEVICENAME="$4"
+	DEVICE="$5"
+	DEVICE="$6"
+	CAM_LIB="$7"
+	DFCF="$8"
+	VDSO_BACKPORT="$9"
+	VERSION=4.0
+	ZIP_DIR=$HOME/Repack
+	KERNEL_DIR=$HOME/Kernel
+	AKSH=$ZIP_DIR/anykernel.sh
 	CLANG_PATH=$HOME/clang
 	CLANG_ARM64=aarch64-linux-gnu-
 	CLANG_COMPAT=arm-linux-gnueabi-
-
-# GCC
 	GCC_PATH=$HOME/gcc-arm64
 	GCC_COMPAT=$HOME/gcc-arm32/bin/arm-eabi-
-
-# Device config
-	NAME='Redmi Note 6 Pro'
-	DEVICE=tulip
-	CAM_LIB=
-
-	KERNEL_DIR=$HOME/Kernel
-	ZIP_DIR=$HOME/Repack
-	AKSH=$ZIP_DIR/anykernel.sh
-	cd $KERNEL_DIR
+	CONFIG=$KERNEL_DIR/arch/arm64/configs/$DFCF
+	KRNLVER=$(make kernelversion | cut -c 1-3)
 	mkdir $COMPILER
 
-# Defconfig
-	DFCF=AtomX-$DEVICE${CAM_LIB}_defconfig
-	CONFIG=$KERNEL_DIR/arch/arm64/configs/$DFCF
-
-# Set variables
 	if [[ "$COMPILER" == "CLANG" ]]; then
 		CC=clang
 		HOSTCC=clang
@@ -55,7 +43,12 @@
 		ETXRA_FLAGS="LD_LIBRARY_PATH=$GCC_PATH/lib:$LD_LIBRARY_PATH"
 	fi
 
-# Compile
+	if [[ "$KRNLVER" == "4.4" || "$KRNLVER" == "4.9" || "$KRNLVER" == "4.14" || "$VDSO_BACKPORT" == "" ]]; then
+		CROSS_COMPILE_32=CROSS_COMPILE_ARM32
+	else
+		CROSS_COMPILE_32=CROSS_COMPILE_COMPAT
+	fi
+
 	muke() {
 		make O=$COMPILER $CFLAG ARCH=arm64 \
 		    $FLAG                          \
@@ -68,7 +61,7 @@
 			PATH=$C_PATH/bin:$PATH         \
 			KBUILD_BUILD_USER=$USER        \
 			KBUILD_BUILD_HOST=$HOST        \
-			CROSS_COMPILE_COMPAT=$CC_COMPAT
+			$CROSS_COMPILE_32=$CC_COMPAT
 	}
 
 	BUILD_START=$(date +"%s")
@@ -124,13 +117,15 @@
 		DIFF=$(($BUILD_END - $BUILD_START))
 
 		cd $KERNEL_DIR
+		COMPILER_NAME="$($C_PATH/bin/$CC --version 2>/dev/null | head -n 1 | perl -pe 's/\(http.*?\)//gs' | sed -e 's/  */ /g' -e 's/[[:space:]]*$//')"
 		telegram-send --format html "\
 		**************Atom-X-Kernel**************
-		Compiler: <code>$CONFIG_CC_VERSION_TEXT</code>
-		Linux Version: <code>$KERNEL_VERSION_LONG</code>
+		Compiler: <code>$COMPILER</code>
+		Compiler-name: <code>$COMPILER_NAME</code>
+		Linux Version: <code>$(make kernelversion)</code>
 		Builder Version: <code>$VERSION</code>
 		Maintainer: <code>$USER</code>
-		Device: <code>$NAME</code>
+		Device: <code>$DEVICENAME</code>
 		Codename: <code>$DEVICE</code>
 		Camlib: <code>$CAM</code>
 		Build Date: <code>$(date +"%Y-%m-%d %H:%M")</code>
