@@ -3,7 +3,7 @@
 	HOST=
 
 # Device config
-	DEVICENAME='Redmi Note 6 Pro'
+	DEVICENAME='Redmi_Note_6_Pro'
 	CODENAME=tulip
 	CODENAME2=
 	CAM_LIB=

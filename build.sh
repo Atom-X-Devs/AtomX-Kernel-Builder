@@ -10,7 +10,7 @@
 	fi
 	DEVICENAME="$4"
 	DEVICE="$5"
-	DEVICE="$6"
+	DEVICE2="$6"
 	CAM_LIB="$7"
 	DFCF="$8"
 	VDSO_BACKPORT="$9"
