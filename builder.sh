@@ -5,7 +5,7 @@
 
 	git clone -q --depth=1 https://github.com/mvaisakh/gcc-arm64 -b  gcc-master $HOME/gcc-arm64
 	git clone -q --depth=1 https://github.com/mvaisakh/gcc-arm -b gcc-master $HOME/gcc-arm32
-	git clone -q --depth=1 https://gitlab.com/ElectroPerf/atom-x-clang $HOME/clang
+	git clone -q --depth=1 https://github.com/ElectroPerf/The-Atom-X-Toolchain $HOME/clang
 	git clone -q --depth=1 https://github.com/Divyanshu-Modi/AnyKernel3 $HOME/Repack
 	git clone -q --depth=1 $SOURCE $HOME/Kernel
 	pip3 -q install telegram-send
@@ -19,10 +19,6 @@
 	source builder-config
 	cd $HOME/Kernel
 	bash build.sh $COMPILER $BUILD_VARS
-	if [[ "$CONTINUE_BUILD" == "yes" ]]; then
-		bash build.sh $COMPILER2 $BUILD_VARS
-	elif [[ "$CONTINUE_BUILD" == "no" ]]; then
-		telegram-send "Not building GCC build as Clang build failed"
-	fi
+	bash build.sh $COMPILER2 $BUILD_VARS
 
 	exit
